@@ -1,0 +1,45 @@
+name: Import site data bundle
+
+# Commits the site's content and media (content/, public/shop, public/theme, public/vendor, public/agents.md,
+# asset-manifest.json) from a verified .tgz bundle. Used once to seed the repository with the exact data the
+# preview was tested against; afterwards use "Sync content from Shopify" to refresh from the live store.
+# The bundle URL and its SHA-256 are in .github/site-data.json; the workflow refuses a bundle whose hash differs.
+on:
+  push:
+    branches: [main]
+    paths: ['.github/site-data.json']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: import-site-data
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and verify bundle
+        run: |
+          URL=$(jq -r .url .github/site-data.json)
+          SHA=$(jq -r .sha256 .github/site-data.json)
+          curl -fSL --retry 5 --retry-delay 10 -o /tmp/site-data.tgz "$URL"
+          echo "$SHA  /tmp/site-data.tgz" | sha256sum -c -
+      - name: Extract
+        run: |
+          tar -xzf /tmp/site-data.tgz
+          test -f content/routes.json && test -d public/shop
+          find public/shop public/theme public/vendor content -type f | wc -l
+          du -sh content public
+      - name: Commit and push
+        run: |
+          git config user.name "site-data-import"
+          git config user.email "actions@users.noreply.github.com"
+          git add content public asset-manifest.json
+          if git diff --cached --quiet; then echo "Nothing to import"; exit 0; fi
+          git commit -m "Import site content and original media ($(jq -r .label .github/site-data.json))"
+          git push

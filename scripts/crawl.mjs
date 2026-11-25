@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+const P=['/','/pages/services','/pages/gallery','/pages/shop','/pages/projects','/blogs/news','/blogs/news?page=2','/pages/team','/pages/artist-press-kit-epk','/pages/about','/pages/contact','/pages/remote-mixing','/pages/refunds-and-cancellation-policy','/policies/privacy-policy','/policies/terms-of-service','/policies/refund-policy','/collections','/collections/all','/collections/frontpage','/collections/services','/collections/studio','/collections/booking','/collections/apparel','/collections/physical-products','/cart','/search','/agents.md','/404-test-page'];
+const prods=['1-hour-full-production-session','book-engineering-session','book-podcasting-voice-over-session','consultation-session','custom-beat-making-service','unisex-disco-sundays-hoodie','full-production-session','mastering','mixing-session','performance-videos','post-production','recording-session','rehearsal-space'];
+const arts=['full-interview-w-ceo-melvin-thomas','jason-geise-the-country-music-rebel-you-need-to-know-about','for-immediate-release-welovesteam-announces-exciting-new-album-chasing-castles','%F0%9F%8E%B6-introducing-houston-2-el-paso','lord-i-pray-single-by-jason-geise','alex-micheal-baby-girl','devil-at-the-crossroads-by-jason-geise','sour-by-woovierx2-disco-sundays-live-sessions','the-art-of-scaring-movie-sound-design-preview','brooke-aint-no-sunshine-disco-sundays','liar-by-favour-glory-disco-sundays-no-color'];
+const all=[...P,...prods.map(p=>'/products/'+p),...arts.map(a=>'/blogs/news/'+a)];
+const urls=[...all,...all.map(u=>'/es'+(u==='/'?'':u))];
+fs.mkdirSync('raw',{recursive:true});const meta=[];
+const q=[...urls];
+await Promise.all(Array.from({length:6},async()=>{while(q.length){const u=q.shift();
+ try{const r=await fetch('https://discosundays.com'+u,{redirect:'manual',headers:{'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/130 Safari/537.36','accept-language':'en-US'}});
+ const t=await r.text();const f='raw/'+(u.replace(/[\/?=]/g,'__')||'home')+'.html';fs.writeFileSync(f,t);
+ meta.push({path:u,status:r.status,location:r.headers.get('location'),file:f,bytes:t.length,title:(t.match(/<title>([\s\S]*?)<\/title>/)||[])[1]?.trim()});}catch(e){meta.push({path:u,error:String(e)})}}}));
+meta.sort((a,b)=>a.path.localeCompare(b.path));fs.writeFileSync('crawl.json',JSON.stringify(meta,null,1));
+for(const m of meta)console.log(m.status,m.path,m.location||'',m.bytes);

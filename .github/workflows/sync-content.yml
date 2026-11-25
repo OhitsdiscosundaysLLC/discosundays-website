@@ -1,0 +1,35 @@
+name: Sync content from Shopify
+
+# Re-captures every page, product, review widget and asset from the live Shopify store and commits the result.
+# Only run this while discosundays.com (or SOURCE_ORIGIN) still serves the Shopify store.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with: { lfs: false }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - run: npm install --no-audit --no-fund && npm install --no-save playwright@latest && npx playwright install --with-deps chromium
+      - name: Crawl
+        run: mkdir -p /tmp/dl && cp scripts/crawl.mjs /tmp/dl/ && cp asset-manifest.json /tmp/dl/ && (cd /tmp/dl && node crawl.mjs)
+      - name: Capture Shopify-only widgets
+        run: node scripts/capture-widgets.mjs .
+      - name: Transform
+        run: node scripts/transform.mjs /tmp/dl . && cp /tmp/dl/asset-manifest.json .
+      - name: Build check
+        run: npx next build
+      - name: Commit
+        run: |
+          git config user.name "content-sync"
+          git config user.email "actions@users.noreply.github.com"
+          git add content public asset-manifest.json
+          git diff --cached --quiet || git commit -m "Sync content from Shopify ($(date -u +%F))"
+          git push

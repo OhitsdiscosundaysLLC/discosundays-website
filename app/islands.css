@@ -1,0 +1,11 @@
+/* Tailwind utilities only (no preflight) so the original theme CSS stays authoritative. */
+@layer theme, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@source "../components";
+
+/* PifyApp hosted contact form: the iframe normally reports its height to the parent page; when that message
+   does not arrive (it is tied to the Shopify domain) use the heights it reports on the live site. */
+#pifyform-14563:not([style*="height:"]):not([style*="height: "]) { height: 976px; }
+@media (max-width: 989px) { #pifyform-14563:not([style*="height:"]):not([style*="height: "]) { height: 1015px; } }
+@media (max-width: 749px) { #pifyform-14563:not([style*="height:"]):not([style*="height: "]) { height: 1465px; } }
