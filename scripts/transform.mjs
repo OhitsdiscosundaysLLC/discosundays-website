@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import * as cheerio from 'cheerio';
+import { embedElfsight } from './lib/elfsight-embed.mjs';
 
 const [dl, site] = process.argv.slice(2);
 const crawl = JSON.parse(fs.readFileSync(path.join(dl, 'crawl.json'), 'utf8'));
@@ -233,8 +234,8 @@ for (const m of crawl) {
   addPaymentTerms($, meta.lang.slice(0, 2));
   const headAssets = $('head').children().toArray().map((el) => $.html(el)).join('\n');
   const body = $('body').html();
-  const html = rewriteUrls(headAssets + '\n' + body)
-    .replace(/<!--(?!\s*(BEGIN|END) )[\s\S]*?-->/g, '');
+  const html = embedElfsight(rewriteUrls(headAssets + '\n' + body)
+    .replace(/<!--(?!\s*(BEGIN|END) )[\s\S]*?-->/g, ''), path.join(site, 'content/widgets/elfsight'));
   const key = (m.path === '/' ? 'index' : m.path.replace(/^\//, ''))
     .replace(/\?page=(\d+)/, '__page-$1').replace(/%/g, '_');
   const file = `content/pages/${key}.json`;
