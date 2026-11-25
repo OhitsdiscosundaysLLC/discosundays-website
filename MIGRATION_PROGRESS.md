@@ -25,17 +25,16 @@ _Last updated: 2026-11-25_
 | 8 | Shop Pay Installments banner via Shopify's public component | Done, tested (2026-11-25) |
 | 9 | Printful "Estimated delivery" line rebuilt natively | Done, tested (2026-11-25) |
 | 10 | Docs: inventories, blockers, test report, deployment and domain guides | Done |
-| 11 | Push code to GitHub | See git log |
-| 12 | Import site data (content + media) into the repo | Import workflow `.github/workflows/import-site-data.yml` |
-| 13 | Vercel preview of the final code and data | Done: `dpl_5pV4RdV2M15XPjNk6pU5gRKW2cmH`, 27/27 on the deployed URL. Git-triggered deployments start after the data import |
+| 11 | Push code to GitHub | Done (2026-11-25) |
+| 12 | Import site data (content + media) into the repo | Done: commit `9a6f75d`, bundle SHA-256 verified |
+| 13 | Vercel deployment built from GitHub, tested | Done: `dpl_B3ymognsjTRLQUmWArWi3DDKh8VN`, 27/27 on the deployed URL |
 | 14 | Domain switch to discosundays.com | **Waiting for your explicit approval** (docs/DOMAIN-MIGRATION.md) |
 
 ## Exact next action
 
-1. Confirm the **Import site data bundle** workflow committed `content/` and `public/` (Actions tab).
-2. Confirm the Vercel deployment of that commit is Ready, then run `scripts/functional-test.mjs` against it.
-3. Add the Resend environment variables to enable form delivery.
-4. When approved, follow docs/DOMAIN-MIGRATION.md.
+1. Owner: add the Resend variables (docs/ENVIRONMENT.md) so form submissions are delivered.
+2. Owner: review the deployment at https://disco-sundays-website.vercel.app (log in to Vercel).
+3. When you approve going live, follow docs/DOMAIN-MIGRATION.md. Nothing has been changed on discosundays.com.
 
 ## How to resume work
 

@@ -11,7 +11,8 @@
   project's `*.vercel.app` URL (no custom domain is attached); other branches create previews.
 - The repository holds the code **and** the site data (`content/`, `public/shop`, `public/theme`, `public/vendor`,
   `asset-manifest.json`), so builds need no external downloads.
-- The data was seeded by the **Import site data bundle** workflow (`.github/site-data.json` → verified `.tgz`).
+- The data was seeded by the **Import site data bundle** workflow (`.github/site-data.json` → verified `.tgz`). The
+  bundle URL in that file was a temporary build server and is no longer needed; the data now lives in the repository.
   Refresh it later with **Sync content from Shopify** (only while discosundays.com still serves the Shopify store).
 - Vercel "Ignored Build Step" is set to skip builds of commits that do not contain the site data yet:
   `if [ -f content/routes.json ] && [ -d public/shop ]; then exit 1; else exit 0; fi`.
