@@ -18,9 +18,11 @@ export function bindContactForms(): () => void {
       const btn = form.querySelector<HTMLButtonElement>('button[type="submit"], button:not([type])');
       if (btn) btn.disabled = true;
       let ok = false;
+      let detail = '';
       try {
-        const r = await fetch('/api/contact', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ page: location.pathname, fields }) });
+        const r = await fetch('/api/contact', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ form: 'contact', lang, page: location.pathname, fields }) });
         ok = r.ok;
+        if (!ok && r.status === 422) detail = ((await r.json().catch(() => ({}))) as { error?: string }).error || '';
       } catch {}
       if (btn) btn.disabled = false;
       form.querySelectorAll('.ds-form-status').forEach((n) => n.remove());
@@ -28,7 +30,7 @@ export function bindContactForms(): () => void {
       status.className = `form-status form-status-list form__message ds-form-status`;
       status.setAttribute('tabindex', '-1');
       status.setAttribute('role', ok ? 'status' : 'alert');
-      status.textContent = ok ? MSG[lang].ok : MSG[lang].err;
+      status.textContent = ok ? MSG[lang].ok : detail || MSG[lang].err;
       form.prepend(status);
       status.focus();
       if (ok) form.reset();

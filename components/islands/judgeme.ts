@@ -20,15 +20,20 @@ export function bindJudgeme(): () => void {
     }));
     w.querySelectorAll<HTMLFormElement>('form').forEach((f) => on(f, 'submit', async (e) => {
       e.preventDefault();
-      const fields: Record<string, string> = { form: 'Product review (Judge.me widget)', product_id: w.closest('[data-id]')?.getAttribute('data-id') || '' };
+      const fields: Record<string, string> = { product: document.querySelector('h1')?.textContent?.trim() || '', product_id: w.closest('[data-id]')?.getAttribute('data-id') || '' };
       new FormData(f).forEach((v, k) => { if (typeof v === 'string') fields[k] = v; });
       f.querySelectorAll<HTMLInputElement>('input[type=email]').forEach((i) => { fields.email = i.value; });
       let ok = false;
-      try { ok = (await fetch('/api/contact', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ page: location.pathname, fields }) })).ok; } catch {}
+      try { ok = (await fetch('/api/contact', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ form: 'review', lang: document.documentElement.lang === 'es' ? 'es' : 'en', page: location.pathname, fields }) })).ok; } catch {}
+      const es = document.documentElement.lang === 'es';
+      f.parentElement?.querySelectorAll('.ds-review-status').forEach((n) => n.remove());
       const msg = document.createElement('div');
-      msg.className = 'jdgm-form__thankyou';
-      msg.textContent = ok ? 'Thank you for submitting a review!' : 'Sorry, your review could not be submitted right now. Please try again later.';
-      f.replaceWith(msg);
+      msg.className = 'jdgm-form__thankyou ds-review-status';
+      msg.setAttribute('role', ok ? 'status' : 'alert');
+      msg.textContent = ok
+        ? (es ? '¡Gracias por enviar tu reseña!' : 'Thank you for submitting a review!')
+        : (es ? 'Lo sentimos, no se pudo enviar tu reseña. Inténtalo de nuevo más tarde.' : 'Sorry, your review could not be submitted right now. Please try again later.');
+      if (ok) f.replaceWith(msg); else f.before(msg); // keep the form (and what was typed) when sending fails
     }));
   });
   // Like Judge.me's script: size classes from the widget's own width (measured on the live store:
