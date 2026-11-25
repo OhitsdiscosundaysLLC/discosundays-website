@@ -92,6 +92,7 @@ for (const [id, kind] of Object.entries(KIND)) {
       const desc = $(imgs[i]).closest('.eapp-photo-gallery-masonry-item-item').find('.eapp-photo-gallery-info-description').text().trim();
       let display = null, full = null;
       if (src?.url) {
+        src.name ||= decodeURIComponent(src.url.split('/').pop().split('?')[0]) || `team-${i + 1}.png`;
         const origDir = path.join(ROOT, 'media-originals/elfsight/team');
         fs.mkdirSync(origDir, { recursive: true });
         const origFile = path.join(origDir, src.name);
