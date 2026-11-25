@@ -27,7 +27,7 @@ _Last updated: 2026-11-25_
 | 10 | Docs: inventories, blockers, test report, deployment and domain guides | Done |
 | 11 | Push code to GitHub | See git log |
 | 12 | Import site data (content + media) into the repo | Import workflow `.github/workflows/import-site-data.yml` |
-| 13 | Vercel deployment from GitHub, then preview testing | Pending import |
+| 13 | Vercel preview of the final code and data | Done: `dpl_5pV4RdV2M15XPjNk6pU5gRKW2cmH`, 27/27 on the deployed URL. Git-triggered deployments start after the data import |
 | 14 | Domain switch to discosundays.com | **Waiting for your explicit approval** (docs/DOMAIN-MIGRATION.md) |
 
 ## Exact next action
