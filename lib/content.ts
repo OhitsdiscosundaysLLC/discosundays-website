@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import routes from '@/content/routes.json';
+import { optimizeHtml } from './media';
 
 export type PageContent = {
   path: string;
@@ -57,7 +58,9 @@ function shopifyPathFor(slug: string[] | undefined, lang: Lang): string {
 const cache = new Map<string, PageContent>();
 function load(file: string): PageContent {
   if (!cache.has(file)) {
-    cache.set(file, JSON.parse(fs.readFileSync(path.join(process.cwd(), 'content', file.replace(/^content\//, '')), 'utf8')));
+    const page = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'content', file.replace(/^content\//, '')), 'utf8')) as PageContent;
+    page.html = optimizeHtml(page.html);
+    cache.set(file, page);
   }
   return cache.get(file)!;
 }
